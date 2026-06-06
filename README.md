@@ -1,39 +1,36 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+# qr_brightness_guard
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/tools/pub/writing-package-pages).
+Backend-independent Flutter widgets for QR display flows that need temporary
+maximum screen brightness and optional wakelock.
 
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/to/develop-packages).
--->
-
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
-
-## Features
-
-TODO: List what your package can do. Maybe include images, gifs, or videos.
-
-## Getting started
-
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+This package is a pure Flutter package. It does not include native code,
+platform channels, a brightness backend, or a wakelock dependency. Applications
+provide the backend actions through callbacks.
 
 ## Usage
 
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
+Wrap the relevant subtree in `QrBrightnessScope`, then wrap each visible QR
+surface in `QrBrightnessGuard`.
 
 ```dart
-const like = 'sample';
+QrBrightnessScope(
+  setMaxBrightness: brightnessBackend.setMaxBrightness,
+  resetBrightness: brightnessBackend.resetBrightness,
+  enableWakelock: wakelockBackend.enable,
+  disableWakelock: wakelockBackend.disable,
+  onError: (error, stackTrace) {
+    // Report callback failures without crashing the UI.
+  },
+  logger: debugPrint,
+  child: QrBrightnessGuard(
+    child: YourQrWidget(),
+  ),
+)
 ```
 
-## Additional information
+For multiple QR widgets, place one `QrBrightnessScope` above them. The scope
+keeps brightness applied while at least one enabled guard is active, releases it
+after the last guard disappears, and reapplies after app resume if the guards are
+still present.
 
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
+On web, both widgets are no-ops and callbacks are not invoked.

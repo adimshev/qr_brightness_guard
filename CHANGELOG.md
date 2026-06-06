@@ -1,3 +1,5 @@
 ## 0.0.1
 
-* TODO: Describe initial release.
+* Initial release with `QrBrightnessScope`, `QrBrightnessGuard`, brightness
+  callbacks, optional wakelock callbacks, lifecycle handling, and web no-op
+  behavior.
