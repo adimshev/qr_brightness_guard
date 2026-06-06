@@ -1,16 +1,19 @@
-# example
+# qr_brightness_guard example
 
-A new Flutter project.
+Demo app for testing `qr_brightness_guard` on real Android and iOS devices.
 
-## Getting Started
+The example wires:
 
-This project is a starting point for a Flutter application.
+* `qr_brightness_guard` from `../`
+* `qr_screen_brightness` from `../../qr_screen_brightness`
+* `wakelock_plus` from pub.dev
 
-A few resources to get you started if this is your first Flutter project:
+Run it from this directory with:
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+```sh
+flutter run
+```
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Tap either QR tile to mount a `QrBrightnessGuard`. The first active QR should
+enable wakelock and max brightness; removing the last active QR should reset
+brightness and disable wakelock.
