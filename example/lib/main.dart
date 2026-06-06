@@ -159,6 +159,10 @@ class _BrightnessGuardDemoPageState extends State<BrightnessGuardDemoPage> {
     });
   }
 
+  void _clearLogs() {
+    setState(_logs.clear);
+  }
+
   String _twoDigits(int value) {
     return value.toString().padLeft(2, '0');
   }
@@ -219,7 +223,11 @@ class _BrightnessGuardDemoPageState extends State<BrightnessGuardDemoPage> {
                   ],
                 ),
               ),
-              _ConsoleLog(controller: _logScrollController, logs: _logs),
+              _ConsoleLog(
+                controller: _logScrollController,
+                logs: _logs,
+                onClear: _clearLogs,
+              ),
             ],
           ),
         ),
@@ -332,10 +340,15 @@ class _StatusPanel extends StatelessWidget {
 }
 
 class _ConsoleLog extends StatelessWidget {
-  const _ConsoleLog({required this.controller, required this.logs});
+  const _ConsoleLog({
+    required this.controller,
+    required this.logs,
+    required this.onClear,
+  });
 
   final ScrollController controller;
   final List<String> logs;
+  final VoidCallback onClear;
 
   @override
   Widget build(BuildContext context) {
@@ -349,15 +362,28 @@ class _ConsoleLog extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          const Padding(
-            padding: EdgeInsets.fromLTRB(12, 10, 12, 6),
-            child: Text(
-              'Console',
-              style: TextStyle(
-                color: Color(0xFFCDD9E5),
-                fontFeatures: <FontFeature>[FontFeature.tabularFigures()],
-                fontWeight: FontWeight.w700,
-              ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(12, 6, 6, 2),
+            child: Row(
+              children: <Widget>[
+                const Expanded(
+                  child: Text(
+                    'Console',
+                    style: TextStyle(
+                      color: Color(0xFFCDD9E5),
+                      fontFeatures: <FontFeature>[FontFeature.tabularFigures()],
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                IconButton(
+                  tooltip: 'Clear logs',
+                  onPressed: logs.isEmpty ? null : onClear,
+                  color: const Color(0xFFCDD9E5),
+                  disabledColor: const Color(0xFF59636E),
+                  icon: const Icon(Icons.delete_sweep, size: 20),
+                ),
+              ],
             ),
           ),
           Expanded(

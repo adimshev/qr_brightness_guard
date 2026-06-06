@@ -331,6 +331,16 @@ void main() {
     ]);
   });
 
+  testWidgets('callbacks can update widgets after guard registration', (
+    tester,
+  ) async {
+    await tester.pumpWidget(const _CallbackSetStateHost());
+    await flushSync(tester);
+
+    expect(tester.takeException(), isNull);
+    expect(find.text('setMaxBrightness'), findsOneWidget);
+  });
+
   testWidgets('guard without scope is a no-op', (tester) async {
     await tester.pumpWidget(const QrBrightnessGuard(child: SizedBox()));
 
@@ -394,5 +404,45 @@ class _CallLog {
     if (error != null) {
       throw error;
     }
+  }
+}
+
+class _CallbackSetStateHost extends StatefulWidget {
+  const _CallbackSetStateHost();
+
+  @override
+  State<_CallbackSetStateHost> createState() => _CallbackSetStateHostState();
+}
+
+class _CallbackSetStateHostState extends State<_CallbackSetStateHost> {
+  var _lastAction = 'idle';
+
+  Future<void> _setMaxBrightness() async {
+    setState(() {
+      _lastAction = 'setMaxBrightness';
+    });
+  }
+
+  Future<void> _resetBrightness() async {
+    setState(() {
+      _lastAction = 'resetBrightness';
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Directionality(
+      textDirection: TextDirection.ltr,
+      child: QrBrightnessScope(
+        setMaxBrightness: _setMaxBrightness,
+        resetBrightness: _resetBrightness,
+        child: Column(
+          children: <Widget>[
+            Text(_lastAction),
+            const QrBrightnessGuard(child: SizedBox()),
+          ],
+        ),
+      ),
+    );
   }
 }

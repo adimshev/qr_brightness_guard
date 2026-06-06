@@ -186,12 +186,11 @@ class _QrBrightnessScopeState extends State<QrBrightnessScope> {
       return;
     }
 
-    unawaited(_drainSync());
+    _syncInProgress = true;
+    unawaited(Future<void>.microtask(_drainSync));
   }
 
   Future<void> _drainSync() async {
-    _syncInProgress = true;
-
     try {
       while (_syncPending) {
         _syncPending = false;
