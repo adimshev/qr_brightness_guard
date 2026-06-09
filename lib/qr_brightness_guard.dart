@@ -10,8 +10,7 @@ part 'src/qr_brightness_scope.dart';
 typedef QrBrightnessAction = Future<void> Function();
 
 /// Receives asynchronous callback failures caught by the guard.
+///
+/// The [stage] identifies which guard action failed.
 typedef QrBrightnessErrorHandler =
-    void Function(Object error, StackTrace stackTrace);
-
-/// Receives short diagnostic messages for callback failures.
-typedef QrBrightnessLogger = void Function(String message);
+    void Function(Object error, StackTrace stackTrace, String stage);

@@ -11,7 +11,6 @@ class QrBrightnessScope extends StatefulWidget {
     this.enableWakelock,
     this.disableWakelock,
     this.onError,
-    this.logger,
     this.enabled = true,
   });
 
@@ -33,9 +32,6 @@ class QrBrightnessScope extends StatefulWidget {
   /// Receives callback failures without letting them escape into the UI.
   final QrBrightnessErrorHandler? onError;
 
-  /// Receives short diagnostic messages for callback failures.
-  final QrBrightnessLogger? logger;
-
   /// Whether this scope is allowed to apply protected screen state.
   final bool enabled;
 
@@ -51,7 +47,6 @@ class _QrBrightnessScopeState extends State<QrBrightnessScope> {
   late final QrBrightnessAction? _enableWakelock;
   late final QrBrightnessAction? _disableWakelock;
   late final QrBrightnessErrorHandler? _onError;
-  late final QrBrightnessLogger? _logger;
 
   AppLifecycleListener? _lifecycleListener;
 
@@ -80,7 +75,6 @@ class _QrBrightnessScopeState extends State<QrBrightnessScope> {
     _enableWakelock = widget.enableWakelock;
     _disableWakelock = widget.disableWakelock;
     _onError = widget.onError;
-    _logger = widget.logger;
     _enabled = widget.enabled;
 
     if (kIsWeb) {
@@ -288,17 +282,11 @@ class _QrBrightnessScopeState extends State<QrBrightnessScope> {
     }
   }
 
-  void _reportFailure(String action, Object error, StackTrace stackTrace) {
+  void _reportFailure(String stage, Object error, StackTrace stackTrace) {
     try {
-      _onError?.call(error, stackTrace);
+      _onError?.call(error, stackTrace, stage);
     } catch (_) {
       // Error handlers must not break protected-state synchronization.
-    }
-
-    try {
-      _logger?.call('QrBrightnessScope: $action failed: $error');
-    } catch (_) {
-      // Loggers are diagnostics only.
     }
   }
 }

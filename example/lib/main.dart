@@ -83,8 +83,8 @@ class _BrightnessGuardDemoPageState extends State<BrightnessGuardDemoPage> {
     _writeLog('wakelock.disable -> done');
   }
 
-  void _handleGuardError(Object error, StackTrace stackTrace) {
-    _writeLog('error: $error');
+  void _handleGuardError(Object error, StackTrace stackTrace, String stage) {
+    _writeLog('$stage failed: $error');
     FlutterError.reportError(
       FlutterErrorDetails(
         exception: error,
@@ -92,11 +92,6 @@ class _BrightnessGuardDemoPageState extends State<BrightnessGuardDemoPage> {
         library: 'qr_brightness_guard_example',
       ),
     );
-  }
-
-  void _logGuardMessage(String message) {
-    debugPrint(message);
-    _writeLog(message);
   }
 
   void _setBrightnessState(String value) {
@@ -176,7 +171,6 @@ class _BrightnessGuardDemoPageState extends State<BrightnessGuardDemoPage> {
       enableWakelock: _guardEnableWakelock,
       disableWakelock: _guardDisableWakelock,
       onError: _handleGuardError,
-      logger: _logGuardMessage,
       child: Scaffold(
         appBar: AppBar(title: const Text('QR brightness guard')),
         body: SafeArea(

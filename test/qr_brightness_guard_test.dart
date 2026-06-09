@@ -71,7 +71,6 @@ void main() {
       enableWakelock: log.enableWakelock,
       disableWakelock: log.disableWakelock,
       onError: log.onError,
-      logger: log.logger,
       child: Column(
         children: List<Widget>.generate(
           guardCount,
@@ -190,7 +189,7 @@ void main() {
 
     expect(log.calls, <String>['enableWakelock', 'setMaxBrightness']);
     expect(log.errors, hasLength(1));
-    expect(log.messages.single, contains('enable wakelock failed'));
+    expect(log.stages, <String>['enable wakelock']);
 
     await tester.pumpWidget(const SizedBox());
     await flushSync(tester);
@@ -219,6 +218,7 @@ void main() {
         'disableWakelock',
       ]);
       expect(log.errors, hasLength(1));
+      expect(log.stages, <String>['set max brightness']);
 
       await flushSync(tester);
 
@@ -266,13 +266,10 @@ void main() {
       'disableWakelock',
     ]);
     expect(log.errors, hasLength(2));
-    expect(log.messages.join('\n'), contains('reset brightness failed'));
-    expect(log.messages.join('\n'), contains('disable wakelock failed'));
+    expect(log.stages, <String>['reset brightness', 'disable wakelock']);
   });
 
-  testWidgets('error handler and logger failures are swallowed', (
-    tester,
-  ) async {
+  testWidgets('error handler failures are swallowed', (tester) async {
     final calls = <String>[];
 
     await tester.pumpWidget(
@@ -284,13 +281,10 @@ void main() {
         resetBrightness: () async {
           calls.add('resetBrightness');
         },
-        onError: (error, stackTrace) {
+        onError: (error, stackTrace, stage) {
           calls.add('onError');
+          calls.add(stage);
           throw StateError('handler failed');
-        },
-        logger: (message) {
-          calls.add('logger');
-          throw StateError('logger failed');
         },
         child: const QrBrightnessGuard(child: SizedBox()),
       ),
@@ -301,7 +295,7 @@ void main() {
     expect(calls, <String>[
       'setMaxBrightness',
       'onError',
-      'logger',
+      'set max brightness',
       'resetBrightness',
     ]);
   });
@@ -365,7 +359,7 @@ class _CallLog {
 
   final List<String> calls = <String>[];
   final List<Object> errors = <Object>[];
-  final List<String> messages = <String>[];
+  final List<String> stages = <String>[];
 
   Future<void> enableWakelock() async {
     calls.add('enableWakelock');
@@ -392,12 +386,9 @@ class _CallLog {
     _throwIfPresent(resetBrightnessError);
   }
 
-  void onError(Object error, StackTrace stackTrace) {
+  void onError(Object error, StackTrace stackTrace, String stage) {
     errors.add(error);
-  }
-
-  void logger(String message) {
-    messages.add(message);
+    stages.add(stage);
   }
 
   void _throwIfPresent(Object? error) {

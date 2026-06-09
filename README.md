@@ -18,10 +18,9 @@ QrBrightnessScope(
   resetBrightness: brightnessBackend.resetBrightness,
   enableWakelock: wakelockBackend.enable,
   disableWakelock: wakelockBackend.disable,
-  onError: (error, stackTrace) {
-    // Report callback failures without crashing the UI.
+  onError: (error, stackTrace, stage) {
+    // Report callback failures with the failed stage.
   },
-  logger: debugPrint,
   child: QrBrightnessGuard(
     child: YourQrWidget(),
   ),
