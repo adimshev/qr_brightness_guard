@@ -189,7 +189,9 @@ void main() {
 
     expect(log.calls, <String>['enableWakelock', 'setMaxBrightness']);
     expect(log.errors, hasLength(1));
-    expect(log.stages, <String>['enable wakelock']);
+    expect(log.stages, <QrBrightnessFailureStage>[
+      QrBrightnessFailureStage.enableWakelock,
+    ]);
 
     await tester.pumpWidget(const SizedBox());
     await flushSync(tester);
@@ -218,7 +220,9 @@ void main() {
         'disableWakelock',
       ]);
       expect(log.errors, hasLength(1));
-      expect(log.stages, <String>['set max brightness']);
+      expect(log.stages, <QrBrightnessFailureStage>[
+        QrBrightnessFailureStage.setMaxBrightness,
+      ]);
 
       await flushSync(tester);
 
@@ -266,7 +270,10 @@ void main() {
       'disableWakelock',
     ]);
     expect(log.errors, hasLength(2));
-    expect(log.stages, <String>['reset brightness', 'disable wakelock']);
+    expect(log.stages, <QrBrightnessFailureStage>[
+      QrBrightnessFailureStage.resetBrightness,
+      QrBrightnessFailureStage.disableWakelock,
+    ]);
   });
 
   testWidgets('error handler failures are swallowed', (tester) async {
@@ -283,7 +290,7 @@ void main() {
         },
         onError: (error, stackTrace, stage) {
           calls.add('onError');
-          calls.add(stage);
+          calls.add(stage.name);
           throw StateError('handler failed');
         },
         child: const QrBrightnessGuard(child: SizedBox()),
@@ -295,7 +302,7 @@ void main() {
     expect(calls, <String>[
       'setMaxBrightness',
       'onError',
-      'set max brightness',
+      'setMaxBrightness',
       'resetBrightness',
     ]);
   });
@@ -359,7 +366,7 @@ class _CallLog {
 
   final List<String> calls = <String>[];
   final List<Object> errors = <Object>[];
-  final List<String> stages = <String>[];
+  final List<QrBrightnessFailureStage> stages = <QrBrightnessFailureStage>[];
 
   Future<void> enableWakelock() async {
     calls.add('enableWakelock');
@@ -386,7 +393,11 @@ class _CallLog {
     _throwIfPresent(resetBrightnessError);
   }
 
-  void onError(Object error, StackTrace stackTrace, String stage) {
+  void onError(
+    Object error,
+    StackTrace stackTrace,
+    QrBrightnessFailureStage stage,
+  ) {
     errors.add(error);
     stages.add(stage);
   }

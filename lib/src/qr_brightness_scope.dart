@@ -191,7 +191,7 @@ class _QrBrightnessScopeState extends State<QrBrightnessScope> {
         await _syncOnce();
       }
     } catch (error, stackTrace) {
-      _reportFailure('sync', error, stackTrace);
+      _reportFailure(QrBrightnessFailureStage.sync, error, stackTrace);
     } finally {
       _syncInProgress = false;
 
@@ -227,7 +227,11 @@ class _QrBrightnessScopeState extends State<QrBrightnessScope> {
         await enableWakelock();
         _ownsWakelock = true;
       } catch (error, stackTrace) {
-        _reportFailure('enable wakelock', error, stackTrace);
+        _reportFailure(
+          QrBrightnessFailureStage.enableWakelock,
+          error,
+          stackTrace,
+        );
       }
 
       if (!_desiredProtectedState) {
@@ -245,7 +249,11 @@ class _QrBrightnessScopeState extends State<QrBrightnessScope> {
       await _setMaxBrightness();
       _ownsBrightness = true;
     } catch (error, stackTrace) {
-      _reportFailure('set max brightness', error, stackTrace);
+      _reportFailure(
+        QrBrightnessFailureStage.setMaxBrightness,
+        error,
+        stackTrace,
+      );
       await _releaseProtectedState(forceBrightnessReset: true);
 
       return;
@@ -265,7 +273,11 @@ class _QrBrightnessScopeState extends State<QrBrightnessScope> {
       try {
         await _resetBrightness();
       } catch (error, stackTrace) {
-        _reportFailure('reset brightness', error, stackTrace);
+        _reportFailure(
+          QrBrightnessFailureStage.resetBrightness,
+          error,
+          stackTrace,
+        );
       } finally {
         _ownsBrightness = false;
       }
@@ -275,14 +287,22 @@ class _QrBrightnessScopeState extends State<QrBrightnessScope> {
       try {
         await _disableWakelock?.call();
       } catch (error, stackTrace) {
-        _reportFailure('disable wakelock', error, stackTrace);
+        _reportFailure(
+          QrBrightnessFailureStage.disableWakelock,
+          error,
+          stackTrace,
+        );
       } finally {
         _ownsWakelock = false;
       }
     }
   }
 
-  void _reportFailure(String stage, Object error, StackTrace stackTrace) {
+  void _reportFailure(
+    QrBrightnessFailureStage stage,
+    Object error,
+    StackTrace stackTrace,
+  ) {
     try {
       _onError?.call(error, stackTrace, stage);
     } catch (_) {

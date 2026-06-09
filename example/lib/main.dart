@@ -83,8 +83,12 @@ class _BrightnessGuardDemoPageState extends State<BrightnessGuardDemoPage> {
     _writeLog('wakelock.disable -> done');
   }
 
-  void _handleGuardError(Object error, StackTrace stackTrace, String stage) {
-    _writeLog('$stage failed: $error');
+  void _handleGuardError(
+    Object error,
+    StackTrace stackTrace,
+    QrBrightnessFailureStage stage,
+  ) {
+    _writeLog('${stage.name} failed: $error');
     FlutterError.reportError(
       FlutterErrorDetails(
         exception: error,
