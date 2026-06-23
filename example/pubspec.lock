@@ -226,9 +226,10 @@ packages:
   qr_screen_brightness:
     dependency: "direct main"
     description:
-      path: "../../qr_screen_brightness"
-      relative: true
-    source: path
+      name: qr_screen_brightness
+      sha256: df45c78882ec4eb299b23e261ca235707d729c389fe5134f0ba69365aad30278
+      url: "https://pub.dev"
+    source: hosted
     version: "0.0.1"
   sky_engine:
     dependency: transitive
