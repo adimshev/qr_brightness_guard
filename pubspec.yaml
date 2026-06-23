@@ -1,7 +1,8 @@
 name: qr_brightness_guard
 description: Backend-independent QR brightness and wakelock guard widgets.
 version: 0.0.1
-homepage:
+homepage: https://github.com/adimshev/qr_brightness_guard
+repository: https://github.com/adimshev/qr_brightness_guard
 
 environment:
   sdk: ^3.10.3
